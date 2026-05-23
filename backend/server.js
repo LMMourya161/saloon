@@ -9,7 +9,7 @@ app.use(express.json());
 
 // MongoDB connection string (update if needed)
 const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/';
-const client = new MongoClient(uri, { useUnifiedTopology: true });
+const client = new MongoClient(uri);
 
 let db;
 client.connect()

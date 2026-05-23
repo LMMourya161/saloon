@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Calendar, MapPin, Check, Save, UserCheck, CalendarDays, X, Scissors, RefreshCw } from "lucide-react";
-import { getCollection, getDoc, updateDoc, queryDocs, logSystemAction } from "../mockDb";
+import { Save, UserCheck, CalendarDays, X, Scissors, RefreshCw } from "lucide-react";
+import { getCollection, getDoc, updateDoc, logSystemAction } from "../mockDb";
 
 export default function Profile({ triggerToast, isOnline }) {
   const navigate = useNavigate();

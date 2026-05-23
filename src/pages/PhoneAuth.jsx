@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Smartphone, Lock, AlertCircle, CheckCircle, RefreshCw } from "lucide-react";
+import { Smartphone, AlertCircle, RefreshCw } from "lucide-react";
 import { insertDoc, queryDocs, updateDoc, logSystemAction } from "../mockDb";
 
 export default function PhoneAuth({ triggerToast, isOnline }) {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, Clock, DollarSign, Send, MessageSquare, PhoneCall, CheckCircle, HelpCircle } from "lucide-react";
+import { Calendar, Clock, Send, MessageSquare, PhoneCall } from "lucide-react";
 import { getDoc, updateDoc, logSystemAction } from "../mockDb";
 
 const MOCK_SERVICES = [

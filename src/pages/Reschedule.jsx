@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { AlertTriangle, Check, Phone, MessageCircle, UserPlus, Search, Stethoscope } from "lucide-react";
-import { getCollection, getDoc, insertDoc, queryDocs, updateDoc, logSystemAction } from "../mockDb";
+import { AlertTriangle, Check, MessageCircle, UserPlus, Search } from "lucide-react";
+import { getCollection, getDoc, insertDoc, logSystemAction } from "../mockDb";
 
 const SALUTATIONS = ["Mr.", "Miss.", "Mrs.", "Ms.", "Dr."];
 

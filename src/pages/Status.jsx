@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Clock, CheckCircle2, XCircle, AlertCircle, ArrowRight, RefreshCw, Scissors, MapPin, Calendar } from "lucide-react";
+import { Clock, CheckCircle2, XCircle, ArrowRight, RefreshCw, Scissors, MapPin, Calendar } from "lucide-react";
 import { getDoc, updateDoc, logSystemAction } from "../mockDb";
 
 export default function Status({ triggerToast, isOnline }) {
   const navigate = useNavigate();
-  const [appointment, setAppointment] = useState(null);
-  const [customer, setCustomer] = useState(null);
   const [stylist, setStylist] = useState(null);
   const [branch, setBranch] = useState(null);
   const [statusState, setStatusState] = useState("pending"); // pending, approved, declined
@@ -24,15 +22,13 @@ export default function Status({ triggerToast, isOnline }) {
       return;
     }
 
-    const custDoc = getDoc("customer", cid, "Customer_id");
-    setCustomer(custDoc);
+    getDoc("customer", cid, "Customer_id");
 
     const branchDoc = getDoc("branches", bid, "branchId");
     setBranch(branchDoc);
 
     if (aid) {
       const appDoc = getDoc("appointment", aid, "id");
-      setAppointment(appDoc);
       
       // Sync with DB status if exists
       if (appDoc && appDoc.status) {

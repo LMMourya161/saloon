@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CreditCard, Check, ShieldCheck, HelpCircle, Receipt, ArrowLeft, Smartphone, WifiOff, Info } from "lucide-react";
+import { Check, ShieldCheck, Receipt, ArrowLeft, WifiOff, Info } from "lucide-react";
 import { getDoc, updateDoc, insertDoc, logSystemAction } from "../mockDb";
 
 const MOCK_SERVICES = [
