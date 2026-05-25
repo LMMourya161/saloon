@@ -69,7 +69,7 @@ export default function Cart({ triggerToast, isOnline }) {
       return;
     }
 
-    // Validation for length between 10 and 25 characters and matching a basic date format
+    // Validation for length between 10 and 25 characters per PDF spec
     const dt = dateTime.trim();
     if (dt.length < 10 || dt.length > 25) {
       triggerToast("please enter the valid Date and Time", "error");
@@ -139,7 +139,7 @@ export default function Cart({ triggerToast, isOnline }) {
   };
 
   // Calculate total pricing and services based on category
-  const services = MOCK_SERVICES.slice(0, appointment?.["Main category"] === "Children" ? 2 : 3);
+  const services = MOCK_SERVICES.slice(0, appointment?.["Main category"] === "Child" ? 2 : 3);
   const totalDuration = "2.5 hours";
   const totalPrice = services.reduce((acc, curr) => acc + curr.price, 0);
 

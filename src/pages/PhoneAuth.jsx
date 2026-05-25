@@ -115,8 +115,13 @@ export default function PhoneAuth({ triggerToast, isOnline }) {
       return;
     }
 
-    if (otp.length !== 6 || otp !== generatedOtp) {
-      triggerToast("E004: Otp you entered is invalid", "error");
+    if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+      triggerToast("please enter the valid otp number", "error");
+      return;
+    }
+
+    if (otp !== generatedOtp) {
+      triggerToast("please enter the valid otp number", "error");
       // Increment failure logs
       logSystemAction("AUTH_FAIL", "customer", { customerId, message: "Invalid OTP submitted." });
       return;

@@ -7,6 +7,10 @@ export default function Stylists({ triggerToast, isOnline }) {
   const navigate = useNavigate();
   const [stylists, setStylists] = useState([]);
   const [branches, setBranches] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [areas, setAreas] = useState([]);
+  const [selectedCityId, setSelectedCityId] = useState("");
+  const [selectedAreaId, setSelectedAreaId] = useState("");
   const [selectedBranchId, setSelectedBranchId] = useState("");
   const [selectedStylist, setSelectedStylist] = useState(null);
   const [activeTab, setActiveTab] = useState("about"); // about, certifications, gallery
@@ -24,15 +28,52 @@ export default function Stylists({ triggerToast, isOnline }) {
     setCustomerId(cid);
     setAppointmentId(aid);
 
-    // Fetch active branches and staffs
-    const activeBranches = getCollection("branches").filter(b => b.Status === "AA");
-    setBranches(activeBranches);
+    // Fetch active cities from master collection
+    const activeCities = getCollection("city_master").filter(c => c.status === "AA");
+    setCities(activeCities);
 
-    // Default to the first branch if available
-    if (activeBranches.length > 0) {
-      setSelectedBranchId(activeBranches[0].branchId);
+    // Default to first city if available
+    if (activeCities.length > 0) {
+      setSelectedCityId(activeCities[0].cityId);
     }
   }, [navigate, triggerToast]);
+
+  // Fetch areas when city changes
+  useEffect(() => {
+    if (selectedCityId) {
+      const cityAreas = getCollection("area_master").filter(
+        a => a.cityId === selectedCityId && a.status === "AA"
+      );
+      setAreas(cityAreas);
+      
+      // Reset area and branch selection when city changes
+      if (cityAreas.length > 0) {
+        setSelectedAreaId(cityAreas[0].areaId);
+      } else {
+        setSelectedAreaId("");
+      }
+    }
+  }, [selectedCityId]);
+
+  // Fetch branches when area changes
+  useEffect(() => {
+    if (selectedAreaId) {
+      const areaBranches = getCollection("branches").filter(
+        b => b.areaId === selectedAreaId && b.Status === "AA"
+      );
+      setBranches(areaBranches);
+      
+      // Default to first branch if available
+      if (areaBranches.length > 0) {
+        setSelectedBranchId(areaBranches[0].branchId);
+      } else {
+        setSelectedBranchId("");
+      }
+    } else {
+      setBranches([]);
+      setSelectedBranchId("");
+    }
+  }, [selectedAreaId]);
 
   // Fetch stylists based on selected branch and active status (AA)
   useEffect(() => {
@@ -102,20 +143,63 @@ export default function Stylists({ triggerToast, isOnline }) {
         </p>
       </div>
 
-      {/* Branch selector */}
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: "2rem" }}>
+      {/* City, Area, and Branch selectors per PDF spec */}
+      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1rem", marginBottom: "2rem" }}>
+        {/* City Dropdown */}
         <div className="glass-card" style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.75rem 1.5rem" }}>
           <MapPin size={18} style={{ color: "var(--accent-color)" }} />
-          <span style={{ fontWeight: "600", fontSize: "0.95rem" }}>Select Salon Branch:</span>
+          <span style={{ fontWeight: "600", fontSize: "0.95rem" }}>City:</span>
+          <select
+            value={selectedCityId}
+            onChange={(e) => setSelectedCityId(e.target.value)}
+            className="form-control"
+            style={{ width: "180px", padding: "0.4rem 0.75rem", fontSize: "0.9rem", background: "rgba(0,0,0,0.2)" }}
+          >
+            {cities.map(c => (
+              <option key={c.cityId} value={c.cityId}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Area Dropdown */}
+        <div className="glass-card" style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.75rem 1.5rem" }}>
+          <MapPin size={18} style={{ color: "var(--accent-color)" }} />
+          <span style={{ fontWeight: "600", fontSize: "0.95rem" }}>Area:</span>
+          <select
+            value={selectedAreaId}
+            onChange={(e) => setSelectedAreaId(e.target.value)}
+            className="form-control"
+            style={{ width: "180px", padding: "0.4rem 0.75rem", fontSize: "0.9rem", background: "rgba(0,0,0,0.2)" }}
+            disabled={areas.length === 0}
+          >
+            {areas.length === 0 ? (
+              <option value="">No areas available</option>
+            ) : (
+              areas.map(a => (
+                <option key={a.areaId} value={a.areaId}>{a.name}</option>
+              ))
+            )}
+          </select>
+        </div>
+
+        {/* Branch Dropdown */}
+        <div className="glass-card" style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.75rem 1.5rem" }}>
+          <MapPin size={18} style={{ color: "var(--accent-color)" }} />
+          <span style={{ fontWeight: "600", fontSize: "0.95rem" }}>Branch:</span>
           <select
             value={selectedBranchId}
             onChange={(e) => setSelectedBranchId(e.target.value)}
             className="form-control"
-            style={{ width: "250px", padding: "0.4rem 0.75rem", fontSize: "0.9rem", background: "rgba(0,0,0,0.2)" }}
+            style={{ width: "200px", padding: "0.4rem 0.75rem", fontSize: "0.9rem", background: "rgba(0,0,0,0.2)" }}
+            disabled={branches.length === 0}
           >
-            {branches.map(b => (
-              <option key={b.branchId} value={b.branchId}>{b.name}</option>
-            ))}
+            {branches.length === 0 ? (
+              <option value="">No branches available</option>
+            ) : (
+              branches.map(b => (
+                <option key={b.branchId} value={b.branchId}>{b.name}</option>
+              ))
+            )}
           </select>
         </div>
       </div>
