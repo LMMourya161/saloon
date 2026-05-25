@@ -1,6 +1,31 @@
 // Mock Firestore Database implementation using localStorage
 
 const SEED_DATA = {
+  // City Master Collection per PDF spec
+  city_master: [
+    { cityId: "city_bangalore", name: "Bangalore", stateId: "state_karnataka", status: "AA" },
+    { cityId: "city_chennai", name: "Chennai", stateId: "state_tamilnadu", status: "AA" },
+    { cityId: "city_mumbai", name: "Mumbai", stateId: "state_maharashtra", status: "AA" },
+    { cityId: "city_hyderabad", name: "Hyderabad", stateId: "state_telangana", status: "AA" }
+  ],
+  // Area Master Collection per PDF spec
+  area_master: [
+    { areaId: "area_koramangala", name: "Koramangala", cityId: "city_bangalore", status: "AA" },
+    { areaId: "area_hsr", name: "HSR Layout", cityId: "city_bangalore", status: "AA" },
+    { areaId: "area_indiranagar", name: "Indiranagar", cityId: "city_bangalore", status: "AA" },
+    { areaId: "area_whitefield", name: "Whitefield", cityId: "city_bangalore", status: "AA" },
+    { areaId: "area_annanagar", name: "Anna Nagar", cityId: "city_chennai", status: "AA" },
+    { areaId: "area_tnagar", name: "T. Nagar", cityId: "city_chennai", status: "AA" },
+    { areaId: "area_bandra", name: "Bandra", cityId: "city_mumbai", status: "AA" },
+    { areaId: "area_hitech", name: "Hitech City", cityId: "city_hyderabad", status: "AA" }
+  ],
+  // State Master Collection
+  state_master: [
+    { stateId: "state_karnataka", name: "Karnataka", status: "AA" },
+    { stateId: "state_tamilnadu", name: "Tamil Nadu", status: "AA" },
+    { stateId: "state_maharashtra", name: "Maharashtra", status: "AA" },
+    { stateId: "state_telangana", name: "Telangana", status: "AA" }
+  ],
   clinics: [
     {
       id: "clinic_01",

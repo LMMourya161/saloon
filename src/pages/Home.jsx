@@ -6,15 +6,13 @@ import { insertDoc, getDoc, queryDocs, saveCollection } from "../mockDb";
 const SUB_CATEGORIES_MAP = {
   Men: [
     { id: "hair_care", name: "Hair care", desc: "Styling, cuts & washes" },
-    { id: "body_care", name: "Body care", desc: "Spa, grooming & detailing" },
-    { id: "beard_care", name: "Beard care", desc: "Trimming, shaving & oils" }
+    { id: "body_care", name: "Body care", desc: "Spa, grooming & detailing" }
   ],
   Women: [
     { id: "hair_care", name: "Hair care", desc: "Coloring, cuts & treatments" },
-    { id: "body_care", name: "Body care", desc: "Massage, waxing & therapy" },
-    { id: "makeup", name: "Makeup", desc: "Bridal, party & beauty salon" }
+    { id: "body_care", name: "Body care", desc: "Massage, waxing & therapy" }
   ],
-  Children: [
+  Child: [
     { id: "hair_care", name: "Hair care", desc: "Kid-friendly hair trims" },
     { id: "body_care", name: "Body care", desc: "Soothing washes & care" }
   ]
@@ -56,7 +54,7 @@ export default function Home({ triggerToast, isOnline }) {
     }
 
     if (!mainCategory) {
-      triggerToast("Please select a main category (Men, Women, or Children) first.", "error");
+      triggerToast("Please select a main category (Men, Women, or Child) first.", "error");
       return;
     }
 
@@ -196,20 +194,20 @@ export default function Home({ triggerToast, isOnline }) {
           </p>
         </div>
 
-        {/* Children Category */}
+        {/* Child Category */}
         <div
-          onClick={() => handleSelectMain("Children")}
+          onClick={() => handleSelectMain("Child")}
           className="glass-card"
           style={{
             cursor: "pointer",
-            borderWidth: mainCategory === "Children" ? "2px" : "1px",
-            borderColor: mainCategory === "Children" ? "var(--accent-color)" : "var(--border-color)",
-            background: mainCategory === "Children" ? "rgba(255, 92, 0, 0.04)" : "rgba(18, 22, 31, 0.65)",
+            borderWidth: mainCategory === "Child" ? "2px" : "1px",
+            borderColor: mainCategory === "Child" ? "var(--accent-color)" : "var(--border-color)",
+            background: mainCategory === "Child" ? "rgba(255, 92, 0, 0.04)" : "rgba(18, 22, 31, 0.65)",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             padding: "2rem",
-            transform: mainCategory === "Children" ? "scale(1.02)" : "scale(1)",
+            transform: mainCategory === "Child" ? "scale(1.02)" : "scale(1)",
             transition: "all 0.2s ease"
           }}
         >
@@ -222,7 +220,7 @@ export default function Home({ triggerToast, isOnline }) {
           }}>
             <Smile size={28} />
           </div>
-          <h3>Children</h3>
+          <h3>Child</h3>
           <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", marginTop: "0.5rem", textAlign: "center" }}>
             Kid-friendly styles and haircuts in a warm environment
           </p>
