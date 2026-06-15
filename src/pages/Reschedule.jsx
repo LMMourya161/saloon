@@ -41,7 +41,22 @@ export default function Reschedule({ triggerToast, isOnline }) {
     setConfirmedTime(dt);
 
     // Calculate a proposed reschedule time (e.g. 2 hours later)
-    setProposedTime(dt.replace("10:00 AM", "12:00 PM").replace("10:00", "12:00"));
+    let proposed = dt;
+    if (dt.includes("T") || dt.match(/^\d{4}-\d{2}-\d{2}/)) {
+      try {
+        const dateObj = new Date(dt);
+        dateObj.setHours(dateObj.getHours() + 2);
+        // Format to ISO-like local date-time string (YYYY-MM-DDTHH:MM)
+        const tzOffset = dateObj.getTimezoneOffset() * 60000;
+        const localISOTime = (new Date(dateObj - tzOffset)).toISOString().slice(0, 16);
+        proposed = localISOTime;
+      } catch (e) {
+        proposed = dt.replace("10:00 AM", "12:00 PM").replace("10:00", "12:00");
+      }
+    } else {
+      proposed = dt.replace("10:00 AM", "12:00 PM").replace("10:00", "12:00");
+    }
+    setProposedTime(proposed);
 
     // Fetch branch info where status is AA
     const bDoc = getDoc("branches", bid, "branchId");
@@ -50,16 +65,29 @@ export default function Reschedule({ triggerToast, isOnline }) {
     const cDoc = getDoc("customer", cid, "Customer_id");
     setCustomer(cDoc);
 
-    // Fetch doctors active in the branch
+    // Fetch doctors/stylists active in the branch (defensive check for DesignationId)
     const staffList = getCollection("staffs");
     const docList = staffList.filter(
-      s => s.branchId === bid && s.status === "AA" && s.DesignationId.includes("doctor")
+      s => s.branchId === bid && s.status === "AA" && s.DesignationId && (s.DesignationId.includes("doctor") || s.DesignationId.includes("stylist"))
     );
     setDoctors(docList);
     if (docList.length > 0) {
       setPatientForm(prev => ({ ...prev, doctorId: docList[0].StaffId }));
     }
   }, [navigate, triggerToast]);
+
+  const formatDateTime = (dt) => {
+    if (!dt) return "Not selected";
+    try {
+      if (!dt.includes("T") && !dt.match(/^\d{4}-\d{2}-\d{2}/)) {
+        return dt;
+      }
+      return new Date(dt).toLocaleString("en-IN", {
+        weekday: "short", year: "numeric", month: "short",
+        day: "numeric", hour: "2-digit", minute: "2-digit"
+      });
+    } catch { return dt; }
+  };
 
   const handleConfirmReschedule = () => {
     if (!isOnline) {
@@ -185,13 +213,13 @@ export default function Reschedule({ triggerToast, isOnline }) {
           <div>
             <div style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--text-muted)", fontWeight: "600" }}>Your Requested Time</div>
             <div style={{ fontSize: "1rem", fontWeight: "700", marginTop: "0.25rem", textDecoration: "line-through", color: "var(--text-secondary)" }}>
-              {confirmedTime}
+              {formatDateTime(confirmedTime)}
             </div>
           </div>
           <div>
             <div style={{ fontSize: "0.75rem", textTransform: "uppercase", color: "var(--accent-color)", fontWeight: "600" }}>Stylist Proposing</div>
             <div style={{ fontSize: "1.1rem", fontWeight: "800", marginTop: "0.25rem", color: "var(--accent-color)" }}>
-              {proposedTime}
+              {formatDateTime(proposedTime)}
             </div>
           </div>
         </div>
@@ -318,7 +346,7 @@ export default function Reschedule({ triggerToast, isOnline }) {
               >
                 {doctors.map(doc => (
                   <option key={doc.StaffId} value={doc.StaffId}>
-                    {doc.name} - {doc.qualification} ({doc.specializationId[0]})
+                    {doc.name} - {doc.qualification} ({(doc.specializationId && doc.specializationId[0]) || "Styling"})
                   </option>
                 ))}
               </select>

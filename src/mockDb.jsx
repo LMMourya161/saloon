@@ -1,4 +1,24 @@
 // Mock Firestore Database implementation using localStorage
+// + Background sync to MongoDB backend
+
+const API_BASE = "http://localhost:5000/api";
+
+// ---- Background sync helpers (fire-and-forget) ----
+const syncToBackend = (method, collection, body) => {
+  try {
+    fetch(`${API_BASE}/${collection}`, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    }).catch(() => {
+      // Silently fail — backend might not be running
+    });
+  } catch (e) {
+    // ignore
+  }
+};
+
+const syncInsert = (collection, doc) => syncToBackend("POST", collection, doc);
 
 const SEED_DATA = {
   clinics: [
@@ -100,6 +120,14 @@ const SEED_DATA = {
       ]
     }
   ],
+  patient: [],
+  services: [
+    { id: "service_01", name: "Hair dye", duration: "1 hour", price: 200, stylistId: "stylist_01" },
+    { id: "service_02", name: "Facial", duration: "50 min", price: 150, stylistId: "stylist_02" },
+    { id: "service_03", name: "Skin care", duration: "45 min", price: 400, stylistId: "stylist_01" },
+    { id: "service_04", name: "Hair cut", duration: "1 hour", price: 600, stylistId: "stylist_03" }
+  ],
+  payments: [],
   patients: [
     {
       patient_id: "patient_default",
@@ -117,22 +145,33 @@ const SEED_DATA = {
   appointments: []
 };
 
-// Initialize DB if not present
+// Initialize DB if not present — also seed MongoDB backend
 export const initDb = () => {
   Object.keys(SEED_DATA).forEach((key) => {
     if (!localStorage.getItem(`db_${key}`)) {
       localStorage.setItem(`db_${key}`, JSON.stringify(SEED_DATA[key]));
+      // Also seed the backend with initial data
+      SEED_DATA[key].forEach((doc) => {
+        syncInsert(key, doc);
+      });
     }
   });
 };
 
 export const getCollection = (collectionName) => {
+  // Backward compatibility: treat 'appointment' as 'appointments'
+  if (collectionName === "appointment") {
+    collectionName = "appointments";
+  }
   initDb();
   const data = localStorage.getItem(`db_${collectionName}`);
   return data ? JSON.parse(data) : [];
 };
 
 export const saveCollection = (collectionName, data) => {
+  if (collectionName === "appointment") {
+    collectionName = "appointments";
+  }
   localStorage.setItem(`db_${collectionName}`, JSON.stringify(data));
   // Dispatch a custom event to notify components about database updates
   window.dispatchEvent(new CustomEvent("mock-db-updated", { detail: { collectionName } }));
@@ -144,11 +183,23 @@ export const queryDocs = (collectionName, filterFn) => {
 };
 
 export const getDoc = (collectionName, docId, keyName = "id") => {
+  // Backward compatibility for 'appointment' collection
+  if (collectionName === "appointment") {
+    collectionName = "appointments";
+  }
   const collection = getCollection(collectionName);
-  return collection.find((doc) => doc[keyName] === docId);
+  return collection.find((doc) => {
+    if (collectionName === "appointments" && (keyName === "id" || keyName === "appointmentId")) {
+      return doc.id === docId || doc.appointmentId === docId;
+    }
+    return doc[keyName] === docId;
+  });
 };
 
 export const insertDoc = (collectionName, doc) => {
+  if (collectionName === "appointment") {
+    collectionName = "appointments";
+  }
   const collection = getCollection(collectionName);
   // Generate random id if not present
   const docId = doc.id || doc.customer_id || doc.patient_id || doc.appointmentId || Math.random().toString(36).substring(2, 11);
@@ -165,24 +216,39 @@ export const insertDoc = (collectionName, doc) => {
   if (collectionName === "customer" && !newDoc.Customer_id) {
     newDoc.Customer_id = docId;
   }
-  if (collectionName === "appointment" && !newDoc.Customer_id) {
+  if ((collectionName === "appointment" || collectionName === "appointments") && !newDoc.Customer_id) {
     newDoc.Customer_id = docId;
   }
-  if (collectionName === "appointments" && !newDoc.appointmentId) {
+  if ((collectionName === "appointment" || collectionName === "appointments") && !newDoc.appointmentId) {
     newDoc.appointmentId = docId;
+  }
+  if ((collectionName === "patients" || collectionName === "patient") && !newDoc.patient_id) {
+    newDoc.patient_id = docId;
   }
 
   collection.push(newDoc);
   saveCollection(collectionName, collection);
   logSystemAction("INSERT", collectionName, newDoc);
+
+  // >>> Sync to MongoDB backend <<<
+  syncInsert(collectionName, newDoc);
+
   return newDoc;
 };
 
 export const updateDoc = (collectionName, docId, updates, keyName = "id") => {
+  // Backward compatibility for 'appointment' collection
+  if (collectionName === "appointment") {
+    collectionName = "appointments";
+  }
   const collection = getCollection(collectionName);
   let updatedDoc = null;
   const newCollection = collection.map((doc) => {
-    if (doc[keyName] === docId) {
+    const isMatch = (collectionName === "appointments" && (keyName === "id" || keyName === "appointmentId"))
+      ? (doc.id === docId || doc.appointmentId === docId)
+      : (doc[keyName] === docId);
+
+    if (isMatch) {
       updatedDoc = {
         ...doc,
         ...updates,
@@ -197,6 +263,9 @@ export const updateDoc = (collectionName, docId, updates, keyName = "id") => {
   if (updatedDoc) {
     saveCollection(collectionName, newCollection);
     logSystemAction("UPDATE", collectionName, updatedDoc);
+
+    // >>> Sync to MongoDB backend <<<
+    syncInsert(collectionName, updatedDoc);
   }
   return updatedDoc;
 };

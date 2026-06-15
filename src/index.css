@@ -1,4 +1,7 @@
-/* Global stylesheet with HSL-tailored colors and modern styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
@@ -477,3 +480,22 @@ h1, h2, h3, h4, h5, h6 {
 .toast-success { border-left-color: var(--success); }
 .toast-info { border-left-color: var(--info); }
 .toast-warning { border-left-color: var(--warning); }
+
+/* Navbar Auth Button Styles */
+.navbar-auth {
+  display: flex;
+  align-items: center;
+  margin-left: 1rem;
+}
+
+.auth-btn {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+

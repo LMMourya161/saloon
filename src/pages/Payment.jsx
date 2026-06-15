@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Check, ShieldCheck, Receipt, ArrowLeft, WifiOff, Info } from "lucide-react";
-import { getDoc, updateDoc, insertDoc, logSystemAction } from "../mockDb";
+import { getDoc, updateDoc, insertDoc, logSystemAction, getCollection } from "../mockDb";
 
 const MOCK_SERVICES = [
   { name: "Hair dye", price: 200 },
@@ -15,6 +15,8 @@ export default function Payment({ triggerToast, isOnline }) {
   const [appointment, setAppointment] = useState(null);
   const [customer, setCustomer] = useState(null);
   const [stylist, setStylist] = useState(null);
+  const [services, setServices] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
   
   // Payment option: 'full' (Pay Now) or 'advance' (Pay Advance)
   const [payOption, setPayOption] = useState("full");
@@ -38,21 +40,23 @@ export default function Payment({ triggerToast, isOnline }) {
     const custDoc = getDoc("customer", cid, "Customer_id");
     setCustomer(custDoc);
 
-    if (aid) {
-      const appDoc = getDoc("appointment", aid, "id");
-      setAppointment(appDoc);
-    }
-
     if (sid) {
       const styDoc = getDoc("staffs", sid, "StaffId");
       setStylist(styDoc);
     }
+
+    if (aid) {
+      const appDoc = getDoc("appointments", aid);
+      setAppointment(appDoc);
+
+      const savedServiceNames = appDoc?.Services || [];
+      const allServices = getCollection("services");
+      const matched = allServices.filter(s => savedServiceNames.includes(s.name));
+      setServices(matched);
+      setTotalPrice(matched.reduce((sum, s) => sum + (s.price || 0), 0));
+    }
   }, [navigate, triggerToast]);
 
-  // Calculate pricing
-  const isChildren = appointment?.["Main category"] === "Children";
-  const services = MOCK_SERVICES.slice(0, isChildren ? 2 : 3);
-  const totalPrice = services.reduce((acc, curr) => acc + curr.price, 0);
   const advanceAmount = Math.round(totalPrice * 0.2); // 20% advance
   const remainingAmount = totalPrice - advanceAmount;
 

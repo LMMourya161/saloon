@@ -28,8 +28,11 @@ export default function Stylists({ triggerToast, isOnline }) {
     const activeBranches = getCollection("branches").filter(b => b.Status === "AA");
     setBranches(activeBranches);
 
-    // Default to the first branch if available
-    if (activeBranches.length > 0) {
+    // Default to the saved branch or first branch if available
+    const savedBranchId = localStorage.getItem("current_branch_id");
+    if (savedBranchId && activeBranches.some(b => b.branchId === savedBranchId)) {
+      setSelectedBranchId(savedBranchId);
+    } else if (activeBranches.length > 0) {
       setSelectedBranchId(activeBranches[0].branchId);
     }
   }, [navigate, triggerToast]);
@@ -104,19 +107,32 @@ export default function Stylists({ triggerToast, isOnline }) {
 
       {/* Branch selector */}
       <div style={{ display: "flex", justifyContent: "center", marginBottom: "2rem" }}>
-        <div className="glass-card" style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.75rem 1.5rem" }}>
-          <MapPin size={18} style={{ color: "var(--accent-color)" }} />
-          <span style={{ fontWeight: "600", fontSize: "0.95rem" }}>Select Salon Branch:</span>
+        <div className="glass-card" style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "0.75rem 1.5rem", flexWrap: "wrap", justifyContent: "center" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <MapPin size={18} style={{ color: "var(--accent-color)" }} />
+            <span style={{ fontWeight: "600", fontSize: "0.95rem" }}>Select Salon Branch:</span>
+          </div>
           <select
             value={selectedBranchId}
-            onChange={(e) => setSelectedBranchId(e.target.value)}
+            onChange={(e) => {
+              setSelectedBranchId(e.target.value);
+              localStorage.setItem("current_branch_id", e.target.value);
+            }}
             className="form-control"
-            style={{ width: "250px", padding: "0.4rem 0.75rem", fontSize: "0.9rem", background: "rgba(0,0,0,0.2)" }}
+            style={{ width: "220px", padding: "0.4rem 0.75rem", fontSize: "0.9rem", background: "rgba(0,0,0,0.2)" }}
           >
             {branches.map(b => (
               <option key={b.branchId} value={b.branchId}>{b.name}</option>
             ))}
           </select>
+          <div style={{ height: "20px", width: "1px", background: "var(--border-color)", display: "inline-block" }} />
+          <button
+            onClick={() => navigate("/salons")}
+            className="btn btn-secondary"
+            style={{ padding: "0.4rem 1rem", fontSize: "0.85rem", display: "flex", alignItems: "center", gap: "0.4rem" }}
+          >
+            <Eye size={14} /> View All Salons
+          </button>
         </div>
       </div>
 

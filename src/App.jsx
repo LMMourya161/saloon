@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
+// LoginNavbar removed; login pages have their own UI
+
 import PhoneAuth from "./pages/PhoneAuth";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
@@ -10,9 +12,18 @@ import Payment from "./pages/Payment";
 import Status from "./pages/Status";
 import Profile from "./pages/Profile";
 import Reschedule from "./pages/Reschedule";
+import CustomerLogin from "./pages/CustomerLogin";
+import AdminLogin from "./pages/AdminLogin";
+import AdminPanel from "./pages/AdminPanel";
+import LoginPage from "./pages/LoginPage";
+import StaffLogin from "./pages/StaffLogin";
+import StaffDashboard from "./pages/StaffDashboard";
+import AppointmentConfirm from "./pages/AppointmentConfirm";
+import SalonSelection from "./pages/SalonSelection";
 
 function App() {
   const [toast, setToast] = useState(null);
+  const location = useLocation();
 
   const triggerToast = (message, type = "info") => {
     setToast({ message, type });
@@ -22,7 +33,7 @@ function App() {
   };
 
   return (
-    <Router>
+    <>
       <div className="app-container">
         {toast && (
           <div style={{
@@ -42,24 +53,31 @@ function App() {
             {toast.message}
           </div>
         )}
+        {/* Render navbar on all pages */}
         <Navbar />
         <main className="main-content">
           <Routes>
-            <Route path="/" element={<Home triggerToast={triggerToast} isOnline={true} />} />
-            <Route path="/phoneauth" element={<PhoneAuth triggerToast={triggerToast} isOnline={true} />} />
-            <Route path="/register" element={<Register triggerToast={triggerToast} isOnline={true} />} />
-            <Route path="/home" element={<Home triggerToast={triggerToast} isOnline={true} />} />
-            <Route path="/stylists" element={<Stylists triggerToast={triggerToast} isOnline={true} />} />
             <Route path="/cart" element={<Cart triggerToast={triggerToast} isOnline={true} />} />
+            <Route path="/appointment-confirm" element={<AppointmentConfirm triggerToast={triggerToast} isOnline={true} />} />
+            <Route path="/salons" element={<SalonSelection triggerToast={triggerToast} isOnline={true} />} />
             <Route path="/payment" element={<Payment triggerToast={triggerToast} isOnline={true} />} />
             <Route path="/status" element={<Status triggerToast={triggerToast} isOnline={true} />} />
             <Route path="/profile" element={<Profile triggerToast={triggerToast} isOnline={true} />} />
             <Route path="/reschedule" element={<Reschedule triggerToast={triggerToast} isOnline={true} />} />
+            <Route path="/admin-login" element={<AdminLogin triggerToast={triggerToast} />} />
+            <Route path="/admin-panel" element={<AdminPanel triggerToast={triggerToast} />} />
+            <Route path="/staff-login" element={<StaffLogin triggerToast={triggerToast} />} />
+            <Route path="/staff-dashboard" element={<StaffDashboard triggerToast={triggerToast} />} />
+            <Route path="/customer-login" element={<CustomerLogin triggerToast={triggerToast} isOnline={true} />} />
+            <Route path="/phoneauth" element={<PhoneAuth triggerToast={triggerToast} isOnline={true} />} />
+            <Route path="/login" element={<LoginPage triggerToast={triggerToast} isOnline={true} />} />
+            <Route path="/" element={<Home triggerToast={triggerToast} isOnline={true} />} />
+            <Route path="/stylists" element={<Stylists triggerToast={triggerToast} isOnline={true} />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
       </div>
-    </Router>
+    </>
   );
 }
 

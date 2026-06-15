@@ -135,12 +135,7 @@ export default function PhoneAuth({ triggerToast, isOnline }) {
     const currentCustomer = queryDocs("customer", (c) => c.Customer_id === customerId)[0];
     
     setTimeout(() => {
-      const redirect = localStorage.getItem("redirect_after_auth") || "/home";
-      if (currentCustomer && currentCustomer.Name && currentCustomer.Age) {
-        navigate(redirect);
-      } else {
-        navigate("/register");
-      }
+      navigate('/');
     }, 1200);
   };
 

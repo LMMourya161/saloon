@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Scissors, Sparkles, Smile, Check } from "lucide-react";
-import { insertDoc, getDoc, queryDocs, saveCollection } from "../mockDb";
+import { insertDoc, getDoc, queryDocs, updateDoc } from "../mockDb";
 
 const SUB_CATEGORIES_MAP = {
   Men: [
@@ -22,6 +22,7 @@ const SUB_CATEGORIES_MAP = {
 
 export default function Home({ triggerToast, isOnline }) {
   const navigate = useNavigate();
+  const isCustomer = localStorage.getItem('is_authenticated') === 'true';
   const [mainCategory, setMainCategory] = useState("");
   const [selectedSubcategories, setSelectedSubcategories] = useState([]);
   const [customerId, setCustomerId] = useState("");
@@ -75,28 +76,20 @@ export default function Home({ triggerToast, isOnline }) {
 
     // Store Category selection in appointment database
     // We check if an appointment document already exists for this customer. If so, update it. If not, insert it.
-    const existingAppointments = queryDocs("appointment", (app) => app.Customer_id === customerId);
+    const existingAppointments = queryDocs("appointments", (app) => app.Customer_id === customerId);
 
     if (existingAppointments.length > 0) {
-      const appId = existingAppointments[0].id;
+      const appDoc = existingAppointments[0];
+      const appId = appDoc.id || appDoc.appointmentId;
       localStorage.setItem("current_appointment_id", appId);
-      
-      // Update appointment collection
-      const list = JSON.parse(localStorage.getItem("db_appointment") || "[]");
-      const updatedList = list.map((item) => {
-        if (item.id === appId) {
-          return {
-            ...item,
-            "Main category": mainCategory,
-            "Sub category": subNames,
-            status: "AA",
-            Modified_at: new Date().toISOString(),
-            Modified_by: customer.Name || "customer"
-          };
-        }
-        return item;
-      });
-      saveCollection("appointment", updatedList);
+
+      // Use updateDoc to write back to the correct collection
+      updateDoc("appointments", appId, {
+        "Main category": mainCategory,
+        "Sub category": subNames,
+        status: "AA",
+        Modified_by: customer.Name || "customer"
+      }, "id");
     } else {
       const newApp = insertDoc("appointment", {
         Customer_id: customerId,
@@ -125,6 +118,14 @@ export default function Home({ triggerToast, isOnline }) {
           Choose your service targets to browse matching professionals.
         </p>
       </div>
+      {/* Login button when not authenticated */}
+      {!isCustomer && (
+        <div style={{ textAlign: "center", marginBottom: "1rem" }}>
+          <button onClick={() => navigate('/login')} className="btn btn-primary" style={{ padding: "0.75rem 2rem" }}>
+            Login
+          </button>
+        </div>
+      )}
 
       <div style={{
         display: "grid",
