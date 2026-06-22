@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
+
 // LoginNavbar removed; login pages have their own UI
+import ProtectedRoute from "./components/ProtectedRoute"
 
 import PhoneAuth from "./pages/PhoneAuth";
 import Register from "./pages/Register";
@@ -18,6 +20,8 @@ import AdminPanel from "./pages/AdminPanel";
 import LoginPage from "./pages/LoginPage";
 import StaffLogin from "./pages/StaffLogin";
 import StaffDashboard from "./pages/StaffDashboard";
+import AICareerAssistant from "./pages/AICareerAssistant";
+import AIPersonalityDNA from "./pages/AIPersonalityDNA";
 import AppointmentConfirm from "./pages/AppointmentConfirm";
 import SalonSelection from "./pages/SalonSelection";
 
@@ -25,12 +29,12 @@ function App() {
   const [toast, setToast] = useState(null);
   const location = useLocation();
 
-  const triggerToast = (message, type = "info") => {
+  const triggerToast = useCallback((message, type = "info") => {
     setToast({ message, type });
     setTimeout(() => {
       setToast(null);
     }, 5000);
-  };
+  }, []);
 
   return (
     <>
@@ -53,8 +57,11 @@ function App() {
             {toast.message}
           </div>
         )}
-        {/* Render navbar on all pages */}
-        <Navbar />
+        {/* Render navbar on all pages except AI Career Assistant */}
+        {(() => {
+  const hideNavbar = location.pathname.startsWith('/ai-career');
+  return hideNavbar ? null : <Navbar />;
+})()}
         <main className="main-content">
           <Routes>
             <Route path="/cart" element={<Cart triggerToast={triggerToast} isOnline={true} />} />
@@ -73,6 +80,8 @@ function App() {
             <Route path="/login" element={<LoginPage triggerToast={triggerToast} isOnline={true} />} />
             <Route path="/" element={<Home triggerToast={triggerToast} isOnline={true} />} />
             <Route path="/stylists" element={<Stylists triggerToast={triggerToast} isOnline={true} />} />
+            <Route path="/ai-career" element={<ProtectedRoute element={<AICareerAssistant triggerToast={triggerToast} isOnline={true} />} />} />
+            <Route path="/ai-personality" element={<AIPersonalityDNA triggerToast={triggerToast} isOnline={true} />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

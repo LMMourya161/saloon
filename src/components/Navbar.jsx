@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Home as HomeIcon, Users as StylistsIcon, ShoppingCart as CartIcon, CreditCard as PaymentIcon, CheckCircle as StatusIcon, User as ProfileIcon, Calendar as RescheduleIcon, Shield, Scissors, Store as StoreIcon, LogIn, LogOut } from "lucide-react";
+import { Home as HomeIcon, Users as StylistsIcon, ShoppingCart as CartIcon, CreditCard as PaymentIcon, CheckCircle as StatusIcon, User as ProfileIcon, Calendar as RescheduleIcon, Shield, Scissors, Store as StoreIcon, LogIn, LogOut, UserCheck } from "lucide-react";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -25,19 +25,22 @@ export default function Navbar() {
     navigate('/login');
   };
 
-  const links = [
-    {to: "/", label: "Home", icon: <HomeIcon size={18} /> },
-    {to: "/salons", label: "Salons", icon: <StoreIcon size={18} /> },
-    {to: "/stylists", label: "Stylists", icon: <StylistsIcon size={18} /> },
-    {to: "/cart", label: "Cart", icon: <CartIcon size={18} /> },
-    {to: "/payment", label: "Payment", icon: <PaymentIcon size={18} /> },
-    {to: "/status", label: "Status", icon: <StatusIcon size={18} /> },
-    {to: "/profile", label: "Profile", icon: <ProfileIcon size={18} /> },
-    {to: "/reschedule", label: "Reschedule", icon: <RescheduleIcon size={18} /> },
-    // Staff and admin links visible only to authenticated staff/admin
-    ...(isStaff ? [{ to: "/staff-dashboard", label: "Staff", icon: <Scissors size={18} /> }] : []),
-    ...(isAdmin ? [{ to: "/admin-panel", label: "Admin", icon: <Shield size={18} /> }] : [])
-  ];
+    const links = [
+      {to: "/", label: "Home", icon: <HomeIcon size={18} /> },
+      {to: "/salons", label: "Salons", icon: <StoreIcon size={18} /> },
+      {to: "/stylists", label: "Stylists", icon: <StylistsIcon size={18} /> },
+      {to: "/cart", label: "Cart", icon: <CartIcon size={18} /> },
+      {to: "/payment", label: "Payment", icon: <PaymentIcon size={18} /> },
+      {to: "/status", label: "Status", icon: <StatusIcon size={18} /> },
+      {to: "/profile", label: "Profile", icon: <ProfileIcon size={18} /> },
+      {to: "/reschedule", label: "Reschedule", icon: <RescheduleIcon size={18} /> },
+      // AI feature links (visible to all customers)
+
+      // {to: "/ai-personality", label: "Personality AI", icon: <UserCheck size={18} /> },
+      // Staff and admin links visible only to authenticated staff/admin
+      ...(isStaff ? [{ to: "/staff-dashboard", label: "Staff", icon: <Scissors size={18} /> }] : []),
+      ...(isAdmin ? [{ to: "/admin-panel", label: "Admin", icon: <Shield size={18} /> }] : [])
+    ];
 
   return (
     <nav className="navbar">

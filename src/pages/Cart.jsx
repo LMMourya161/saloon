@@ -26,7 +26,7 @@ export default function Cart({ triggerToast, isOnline }) {
     }
     if (!aid || !sid) {
       triggerToast("Booking details missing. Redirecting...", "warning");
-      navigate("/home");
+      setTimeout(() => navigate("/"), 1500);
       return;
     }
     setCustomerId(cid);
@@ -55,7 +55,7 @@ export default function Cart({ triggerToast, isOnline }) {
     tomorrow.setHours(10, 0, 0, 0);
     const iso = tomorrow.toISOString().slice(0, 16);
     setDateTime(iso);
-  }, [navigate, triggerToast]);
+  }, [navigate]);
 
   const toggleService = (serviceName) => {
     setSelectedServices(prev => {

@@ -1,0 +1,42 @@
+{
+  "Corporate Executive": {
+    "image_traits": ["professional", "trustworthy", "disciplined"],
+    "avoid": ["neon colors", "extreme styles"],
+    "preferred": ["clean haircut", "natural colors"]
+  },
+  "Tech Professional": {
+    "image_traits": ["innovative", "detail-oriented"],
+    "avoid": ["overly casual"],
+    "preferred": ["sharp cut", "subtle highlights"]
+  },
+  "Creative Professional": {
+    "image_traits": ["expressive", "artistic"],
+    "avoid": ["conservative styles"],
+    "preferred": ["bold cuts", "creative styling"]
+  },
+  "Sales & Marketing": {
+    "image_traits": ["confident", "approachable"],
+    "avoid": ["drab looks"],
+    "preferred": ["polished style", "modern color"]
+  },
+  "Healthcare": {
+    "image_traits": ["trustworthy", "clean"],
+    "avoid": ["bright colors"],
+    "preferred": ["neat haircut", "soft tones"]
+  },
+  "Educator": {
+    "image_traits": ["knowledgeable", "calm"],
+    "avoid": ["edgy cuts"],
+    "preferred": ["classic style", "subtle color"]
+  },
+  "Hospitality": {
+    "image_traits": ["friendly", "stylish"],
+    "avoid": ["messy looks"],
+    "preferred": ["trendy yet tidy", "pleasant hue"]
+  },
+  "Entrepreneur": {
+    "image_traits": ["dynamic", "visionary"],
+    "avoid": ["standard"],
+    "preferred": ["modern cut", "distinctive color"]
+  }
+}
