@@ -25,11 +25,30 @@ export default function AdminPanel({ triggerToast }) {
   }, [navigate]);
 
   const loadData = () => {
+    // Combine both legacy 'patients' and new 'customer' collections
+    const legacyPatients = getCollection("patients").map(p => ({
+      patient_id: p.patient_id,
+      name: p.name,
+      gender: p.gender,
+      mobile_number: p.mobile_number,
+      status: p.status
+    }));
+
+    const registeredCustomers = getCollection("customer").map(c => ({
+      patient_id: c.Customer_id || c.id,
+      name: c.Name || "Unregistered",
+      gender: c.Gender || "-",
+      mobile_number: c.Mobile_number,
+      status: c.Status || "AA"
+    }));
+
+    const combinedCustomers = [...legacyPatients, ...registeredCustomers];
+
     setData({
       clinics: getCollection("clinics"),
       branches: getCollection("branches"),
       staffs: getCollection("staffs"),
-      patients: getCollection("patients"),
+      patients: combinedCustomers,
       appointments: getCollection("appointment") // or appointments
     });
   };

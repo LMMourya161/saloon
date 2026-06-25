@@ -10,7 +10,7 @@ export default function AdminLogin({ triggerToast }) {
   const handleLogin = (e) => {
     e.preventDefault();
     // Simple hardcoded check for demo purposes
-    if (username === "admin" && password === "admin") {
+    if (username === "admin" && password === "admin@Salon2026") {
       localStorage.setItem("adminAuth", "true");
       triggerToast("Admin login successful", "success");
       navigate("/admin-panel");
@@ -74,7 +74,7 @@ export default function AdminLogin({ triggerToast }) {
         </form>
         
         <div style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-          <p>Demo Credentials: <b>admin</b> / <b>admin</b></p>
+          <p>Demo Credentials: <b>admin</b> / <b>admin@Salon2026</b></p>
         </div>
       </div>
     </div>
